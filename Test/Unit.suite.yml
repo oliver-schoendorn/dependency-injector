@@ -1,0 +1,4 @@
+actor: UnitTester
+modules:
+    enabled:
+        - \OS\DependencyInjector\Test\Helper\Unit
