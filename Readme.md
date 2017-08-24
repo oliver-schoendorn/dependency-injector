@@ -1,5 +1,7 @@
 # PHP7 Dependency Injector
 
+[![Build Status](https://travis-ci.org/oliver-schoendorn/dependency-injector.svg?branch=master)](https://travis-ci.org/oliver-schoendorn/dependency-injector)
+
 ## Usage
 
 This readme will get better over time, I promise.
