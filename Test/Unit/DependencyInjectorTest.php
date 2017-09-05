@@ -85,6 +85,25 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
         verify($shares[TestClass01::class])->same($instance);
     }
 
+    public function testShareWithAlias()
+    {
+        verify($this->handler)->isInstanceOf(ReflectionHandlerInterface::class);
+        $alias = 'a random alias';
+        $instance = new TestClass01();
+        $di = new DependencyInjector($this->handler, $this->logger);
+        $accessor = new ClassAccessor($di);
+
+        verify($di->share($instance, $alias))->same($di);
+
+        $shares = $accessor->getProperty('sharedInstances');
+        verify(isset($shares[TestClass01::class]))->true();
+        verify($shares[TestClass01::class])->same($instance);
+
+        $aliases = $accessor->getProperty('aliases');
+        verify(isset($aliases[$alias]))->true();
+        verify($aliases[$alias])->equals(TestClass01::class);
+    }
+
     public function testDelegate()
     {
         $delegate = function() {};

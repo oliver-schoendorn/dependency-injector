@@ -89,14 +89,20 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      * The given class instance will be treated like a singleton (at least until overloaded).
      *
      * @param object $classInstance
+     * @param string|null $alias
      *
      * @return DependencyInjectorInterface
      */
-    public function share($classInstance): DependencyInjectorInterface
+    public function share($classInstance, string $alias = null): DependencyInjectorInterface
     {
         $classId = get_class($classInstance);
         $this->logger->debug('Registered shared instance of class {classId}', [ 'classId' => $classId ]);
         $this->sharedInstances[$classId] = $classInstance;
+
+        if ($alias) {
+            $this->alias($classId, $alias);
+        }
+
         return $this;
     }
 
