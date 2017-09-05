@@ -40,10 +40,11 @@ interface DependencyInjectorInterface
      * The given class instance will be treated like a singleton (at least until overloaded).
      *
      * @param object $classInstance
+     * @param string|null $alias
      *
      * @return DependencyInjectorInterface
      */
-    public function share($classInstance): DependencyInjectorInterface;
+    public function share($classInstance, string $alias = null): DependencyInjectorInterface;
 
     /**
      * Registers a new class id and a factory in order to create instances of the referenced class.
