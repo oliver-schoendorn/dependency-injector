@@ -79,7 +79,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     public function __construct(ReflectionHandlerInterface $reflectionHandler, LoggerInterface $logger = null)
     {
         $this->reflectionHandler = $reflectionHandler;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = $logger ?: new NullLogger();
         $this->share($this);
     }
 
@@ -93,7 +93,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return DependencyInjectorInterface
      */
-    public function share($classInstance, string $alias = null): DependencyInjectorInterface
+    public function share($classInstance, $alias = null)
     {
         $classId = get_class($classInstance);
         $this->logger->debug('Registered shared instance of class {classId}', [ 'classId' => $classId ]);
@@ -114,7 +114,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return DependencyInjectorInterface
      */
-    public function delegate(string $classId, callable $factory): DependencyInjectorInterface
+    public function delegate($classId, callable $factory)
     {
         $this->logger->debug('Registered delegate for class {classId}', [ 'classId' => $classId ]);
         $this->delegates[$classId] = $factory;
@@ -129,7 +129,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return DependencyInjectorInterface
      */
-    public function alias(string $original, string $alias): DependencyInjectorInterface
+    public function alias($original, $alias)
     {
         $this->logger->debug('Registered alias for class {classId} to {alias}', [ 'classId' => $original, 'alias' => $alias ]);
         $this->aliases[$alias] = $original;
@@ -144,7 +144,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return DependencyInjectorInterface
      */
-    public function configure(string $classId, array $arguments): DependencyInjectorInterface
+    public function configure($classId, array $arguments)
     {
         $this->configs[$classId] = $arguments;
         return $this;
@@ -161,7 +161,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return object
      */
-    public function resolve(string $classId, array $arguments = [])
+    public function resolve($classId, array $arguments = [])
     {
         $this->logger->debug('Requested instance of class {classId}', [ 'classId' => $classId ]);
         $this->processing = [];
@@ -200,7 +200,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return object
      */
-    protected function resolveDependency(string $classId, array $arguments = [])
+    protected function resolveDependency($classId, array $arguments = [])
     {
         $this->logger->debug('Resolving class {classId}', [ 'classId' => $classId ]);
 
@@ -241,7 +241,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
         $this->processing[$classId] = false;
 
         // Return the new instance
-        return new $classId(...$constructorArguments);
+        return (new \ReflectionClass($classId))->newInstanceArgs($constructorArguments);
     }
 
     /**
@@ -252,7 +252,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return array
      */
-    protected function mergeWithConfigIfExists(string $classId, array $arguments): array
+    protected function mergeWithConfigIfExists($classId, array $arguments)
     {
         // Nothing to do if we have no default configs for this class
         if ( ! isset($this->configs[$classId])) {
@@ -285,7 +285,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return array
      */
-    protected function resolveParameters(string $classId, string $methodName, array $requiredArguments, array $givenArguments = []): array
+    protected function resolveParameters($classId, $methodName, array $requiredArguments, array $givenArguments = [])
     {
         // Prepare the return value
         $resolvedParameters = [];
@@ -328,8 +328,8 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return string
      */
-    protected function resolveAlias(string $classId): string
+    protected function resolveAlias($classId)
     {
-        return $this->aliases[$classId] ?? $classId;
+        return isset($this->aliases[$classId]) ? $this->aliases[$classId] : $classId;
     }
 }

@@ -21,7 +21,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject|CacheItemPoolInterface
      */
-    private function getCacheMockBuilder(): \PHPUnit_Framework_MockObject_MockObject
+    private function getCacheMockBuilder()
     {
         return $this->getMockBuilder(CacheItemPoolInterface::class)
             ->setMethodsExcept([])
@@ -58,7 +58,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
      * @param bool $cacheItemExpired
      * @param DependencyContainer|null $container
      */
-    public function testGetDependencyContainer(bool $cacheItemExpired, DependencyContainer $container = null)
+    public function testGetDependencyContainer($cacheItemExpired, DependencyContainer $container = null)
     {
         $cacheItem = new DependencyCacheItem(
             'key',
@@ -89,8 +89,8 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
     {
         $testClassId = TestClass01::class;
         $testClassConstructorArguments = [ 'testGetMethodParameters' => [
-            'foo' => new Argument('foo', 'string'),
-            'bar' => new Argument('bar', 'int', null, true, 23)
+            'foo' => new Argument('foo', null),
+            'bar' => new Argument('bar', null, null, true, 23)
         ]];
 
         return [
@@ -106,7 +106,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
      * @param string $classId
      * @param string[] $arguments
      */
-    public function testGetMethodParameters(bool $shouldUpdate, string $classId, array $arguments)
+    public function testGetMethodParameters($shouldUpdate, $classId, array $arguments)
     {
         $container = new DependencyContainer($classId, $shouldUpdate ? [] : $arguments);
         $cacheItem = new DependencyCacheItem(

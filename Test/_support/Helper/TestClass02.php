@@ -22,7 +22,7 @@ class TestClass02
 {
     public $constructorArguments;
 
-    public function __construct(TestClass01 $test, string $foo = 'empty', int $bar = 12)
+    public function __construct(TestClass01 $test, $foo = 'empty', $bar = 12)
     {
         $this->constructorArguments = [
             'test' => $test,
@@ -31,7 +31,7 @@ class TestClass02
         ];
     }
 
-    public function staticMethod(TestClass01 $test, string $foo, int $bar = 12)
+    public function staticMethod(TestClass01 $test, $foo, $bar = 12)
     {
         return [
             'test' => $test,

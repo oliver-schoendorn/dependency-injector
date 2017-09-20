@@ -18,14 +18,14 @@
 
 namespace OS\DependencyInjector\Test\Helper;
 
-function callableFunction(string $foo)
+function callableFunction($foo)
 {
     return true;
 }
 
 class CallableClass
 {
-    public function callableMethod(string $foo)
+    public function callableMethod($foo)
     {
         return true;
     }
@@ -33,21 +33,21 @@ class CallableClass
 
 class CallableClassWithInvoke
 {
-    public function __invoke(string $foo)
+    public function __invoke($foo)
     {
         return true;
     }
 }
 
 global $closure;
-$closure = function(string $foo)
+$closure = function($foo)
 {
     return true;
 };
 
 class CallableStaticClass
 {
-    public static function callableStaticMethod(string $foo)
+    public static function callableStaticMethod($foo)
     {
         return true;
     }

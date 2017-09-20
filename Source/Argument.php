@@ -54,7 +54,7 @@ class Argument
      * @param bool $isOptional
      * @param mixed|null $defaultValue
      */
-    public function __construct(string $name, string $type = null, string $classId = null, bool $isOptional = false, $defaultValue = null)
+    public function __construct($name, $type = null, $classId = null, $isOptional = false, $defaultValue = null)
     {
         $this->name = $name;
         $this->type = $type;

@@ -64,7 +64,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
      * @param string $expiry
      * @param bool   $hasValue
      */
-    public function testIsHit(bool $isHit, string $expiry, bool $hasValue)
+    public function testIsHit($isHit, $expiry, $hasValue)
     {
         $item = new DependencyCacheItem(
             'key',
@@ -122,7 +122,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
      * @param string $expires
      * @param bool   $isExpired
      */
-    public function testIsExpired(string $expires, bool $isExpired)
+    public function testIsExpired($expires, $isExpired)
     {
         $expires = new \DateTimeImmutable($expires);
         $item = new DependencyCacheItem('key', false, null, $expires);

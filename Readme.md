@@ -63,7 +63,7 @@ class ClassWithSetters
 }
 
 // -> the parameters of the delegate method will get resolved by the dependency injector
-$delegate = function(Monolog\Logger $logger): SomeClassWithDependencies
+$delegate = function(Monolog\Logger $logger)
 {
     $instance = new ClassWithSetters();
     $instance->setLogger($logger);

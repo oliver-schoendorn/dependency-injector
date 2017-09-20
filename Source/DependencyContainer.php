@@ -42,7 +42,7 @@ class DependencyContainer implements \Serializable
      * @param string $classId
      * @param array  $store
      */
-    public function __construct(string $classId, array $store = [])
+    public function __construct($classId, array $store = [])
     {
         $this->classId = $classId;
         $this->store = $store;
@@ -53,7 +53,7 @@ class DependencyContainer implements \Serializable
      *
      * @return string
      */
-    public function getClassId(): string
+    public function getClassId()
     {
         return $this->classId;
     }
@@ -65,7 +65,7 @@ class DependencyContainer implements \Serializable
      *
      * @return bool
      */
-    public function hasMethod(string $methodName): bool
+    public function hasMethod($methodName)
     {
         return isset($this->store[$methodName]);
     }
@@ -78,7 +78,7 @@ class DependencyContainer implements \Serializable
      *
      * @return DependencyContainer
      */
-    public function addMethod(string $methodName, array $parameters = []): DependencyContainer
+    public function addMethod($methodName, array $parameters = [])
     {
         $this->store[$methodName] = $parameters;
         return $this;
@@ -91,7 +91,7 @@ class DependencyContainer implements \Serializable
      *
      * @return DependencyContainer
      */
-    public function addParameter(string $methodName, string $parameterName, string $parameterClass = null): DependencyContainer
+    public function addParameter($methodName, $parameterName, $parameterClass = null)
     {
         // Create a key for the current method in the internal store, if necessary
         if ( ! isset($this->store[$methodName])) {
@@ -109,7 +109,7 @@ class DependencyContainer implements \Serializable
      *
      * @return array
      */
-    public function getParameters(string $methodName): array
+    public function getParameters($methodName)
     {
         if ( ! isset($this->store[$methodName])) {
             return [];

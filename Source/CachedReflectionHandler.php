@@ -41,7 +41,7 @@ class CachedReflectionHandler extends ReflectionHandler
      * @param int $cacheTTL Cache item lifetime (in seconds)
      * @param LoggerInterface|null $logger
      */
-    public function __construct(CacheItemPoolInterface $cachePool, int $cacheTTL = 86400, LoggerInterface $logger = null)
+    public function __construct(CacheItemPoolInterface $cachePool, $cacheTTL = 86400, LoggerInterface $logger = null)
     {
         parent::__construct($logger);
 
@@ -54,7 +54,7 @@ class CachedReflectionHandler extends ReflectionHandler
      *
      * @return DependencyContainer
      */
-    public function getDependencyContainer(string $classId): DependencyContainer
+    public function getDependencyContainer($classId)
     {
         if ($container = $this->getDependencyFromCache($classId)) {
             $this->logger->debug('Returned DependencyContainer of {classId} from cache', [ 'classId' => $classId ]);
@@ -68,7 +68,7 @@ class CachedReflectionHandler extends ReflectionHandler
      * @param string $classId
      * @return DependencyContainer|null
      */
-    private function getDependencyFromCache(string $classId)
+    private function getDependencyFromCache($classId)
     {
         if ( ! ($container = $this->cachePool->getItem($classId)) || ! $container->isHit()) {
             return null;
@@ -78,7 +78,7 @@ class CachedReflectionHandler extends ReflectionHandler
         }
     }
 
-    protected function reflectMethod(DependencyContainer $container, string $methodName): DependencyContainer
+    protected function reflectMethod(DependencyContainer $container, $methodName)
     {
         $container = parent::reflectMethod($container, $methodName);
         $this->saveToCache($container);

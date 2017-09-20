@@ -30,7 +30,7 @@ interface ReflectionHandlerInterface
      *
      * @return DependencyContainer
      */
-    public function getDependencyContainer(string $classId): DependencyContainer;
+    public function getDependencyContainer($classId);
 
     /**
      * Will return a list with all arguments
@@ -43,12 +43,12 @@ interface ReflectionHandlerInterface
      *
      * @return array
      */
-    public function getMethodParameters(string $classId, string $methodName = '__constructor'): array;
+    public function getMethodParameters($classId, $methodName = '__constructor');
 
     /**
      * @param callable $callable
      *
      * @return Argument[]
      */
-    public function getCallableParameters(callable $callable): array;
+    public function getCallableParameters(callable $callable);
 }

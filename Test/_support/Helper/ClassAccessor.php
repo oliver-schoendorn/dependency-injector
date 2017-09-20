@@ -45,7 +45,7 @@ class ClassAccessor
      * @param string $name
      * @return mixed
      */
-    public function getProperty(string $name)
+    public function getProperty($name)
     {
         $closure = function($object, $name) {
             return $object->{$name};
@@ -55,7 +55,7 @@ class ClassAccessor
         return $closure($this->object, $name);
     }
 
-    private function getClassId(): string
+    private function getClassId()
     {
         return is_string($this->object) ? $this->object : get_class($this->object);
     }
@@ -66,7 +66,7 @@ class ClassAccessor
      * @param string $name
      * @return mixed
      */
-    public function getStaticProperty(string $name)
+    public function getStaticProperty($name)
     {
         $closure = function($object, $name)
         {
@@ -83,7 +83,7 @@ class ClassAccessor
      * @param string $name
      * @param mixed $value
      */
-    public function setProperty(string $name, $value)
+    public function setProperty($name, $value)
     {
         $closure = function($object, $name, $value) {
             return $object->{$name} = $value;
@@ -99,7 +99,7 @@ class ClassAccessor
      * @param string $name
      * @param mixed $value
      */
-    public function setStaticProperty(string $name, $value)
+    public function setStaticProperty($name, $value)
     {
         $closure = function($object, $name, $value) {
             return $object::$$name = $value;
@@ -117,10 +117,10 @@ class ClassAccessor
      * 
      * @return mixed
      */
-    public function invokeMethod(string $name, array $arguments = [])
+    public function invokeMethod($name, array $arguments = [])
     {
         $closure = function($object, $name, $arguments) {
-            return $object->{$name}(...$arguments);
+            return call_user_func_array([$object, $name], $arguments);
         };
 
         $closure = \Closure::bind($closure, null, $this->getClassId());
@@ -135,10 +135,10 @@ class ClassAccessor
      *
      * @return mixed
      */
-    public function invokeStaticMethod(string $name, array $arguments = [])
+    public function invokeStaticMethod($name, array $arguments = [])
     {
         $closure = function($object, $name, $arguments) {
-            return $object::$$name(...$arguments);
+            return call_user_func_array([$object, $name], $arguments);
         };
 
         $closure = \Closure::bind($closure, null, $this->getClassId());

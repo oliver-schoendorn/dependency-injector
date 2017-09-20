@@ -44,7 +44,7 @@ interface DependencyInjectorInterface
      *
      * @return DependencyInjectorInterface
      */
-    public function share($classInstance, string $alias = null): DependencyInjectorInterface;
+    public function share($classInstance, $alias = null);
 
     /**
      * Registers a new class id and a factory in order to create instances of the referenced class.
@@ -54,7 +54,7 @@ interface DependencyInjectorInterface
      *
      * @return DependencyInjectorInterface
      */
-    public function delegate(string $classId, callable $factory): DependencyInjectorInterface;
+    public function delegate($classId, callable $factory);
 
     /**
      * Registers a new class id alias.
@@ -64,7 +64,7 @@ interface DependencyInjectorInterface
      *
      * @return DependencyInjectorInterface
      */
-    public function alias(string $original, string $alias): DependencyInjectorInterface;
+    public function alias($original, $alias);
 
     /**
      * Will return the requested class instance.
@@ -77,5 +77,5 @@ interface DependencyInjectorInterface
      *
      * @return object
      */
-    public function resolve(string $classId, array $arguments = []);
+    public function resolve($classId, array $arguments = []);
 }

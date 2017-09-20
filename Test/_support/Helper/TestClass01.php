@@ -29,7 +29,7 @@ class TestClass01
         $this->constructorArgument = $optional;
     }
 
-    public function testGetMethodParameters(string $foo, int $bar = 23)
+    public function testGetMethodParameters($foo, $bar = 23)
     {
 
     }
@@ -49,30 +49,30 @@ class TestClass01
         array $array,
         callable $callable,
 //        iterable $iterable, // php 7.1
-        bool $bool,
-        float $float,
-        int $int,
-        string $string,
-        ...$variadic
+        $bool,
+        $float,
+        $int,
+        $string
+//        ...$variadic // php 5.6
     ) {
 
     }
 
     public function defaultValueTest(
-        int $int = 1,
-        float $float = 10.2,
-        string $string = 'string',
-        bool $bool = false,
+        $int = 1,
+        $float = 10.2,
+        $string = 'string',
+        $bool = false,
         array $array = [ 'foo' => 'bar' ]
     ) {
 
     }
 
     public function defaultValueNullTest(
-        int $int = null,
-        float $float = null,
-        string $string = null,
-        bool $bool = null,
+        $int = null,
+        $float = null,
+        $string = null,
+        $bool = null,
         array $array = null
     ) {
 

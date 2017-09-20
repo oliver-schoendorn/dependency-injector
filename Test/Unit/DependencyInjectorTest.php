@@ -242,7 +242,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testResolveWithDelegate()
     {
         $di = new DependencyInjector($this->handler, $this->logger);
-        $di->delegate('foo', function(DependencyInjector $injector, string $classId, array $arguments = []) use ($di)
+        $di->delegate('foo', function(DependencyInjector $injector, $classId, array $arguments = []) use ($di)
         {
             verify($injector)->same($di);
             verify($classId)->equals('foo');
@@ -294,7 +294,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
         global $closure;
 
         return array_map(function($value) { return [ $value ]; }, [
-            'emptyFunc' => function(string $foo) { return true; },
+            'emptyFunc' => function($foo) { return true; },
             'object' => [(new CallableClass()), 'callableMethod'],
             'globalFunc' => 'OS\DependencyInjector\Test\Helper\callableFunction',
             'staticString' => CallableStaticClass::class . '::callableStaticMethod',

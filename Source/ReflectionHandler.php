@@ -39,7 +39,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
      */
     public function __construct(LoggerInterface $logger = null)
     {
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -47,7 +47,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
      *
      * @return DependencyContainer
      */
-    public function getDependencyContainer(string $classId): DependencyContainer
+    public function getDependencyContainer($classId)
     {
         $this->logger->debug('Create new DependencyContainer for {classId}', [ 'classId' => $classId ]);
         return new DependencyContainer($classId);
@@ -64,7 +64,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
      *
      * @return Argument[]
      */
-    public function getMethodParameters(string $classId, string $methodName = '__constructor'): array
+    public function getMethodParameters($classId, $methodName = '__constructor')
     {
         $container = $this->getDependencyContainer($classId);
         if ( ! $container->hasMethod($methodName)) {
@@ -78,13 +78,13 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
      *
      * @return Argument[]
      */
-    public function getCallableParameters(callable $callable): array
+    public function getCallableParameters(callable $callable)
     {
         $reflection = $this->getReflectionByCallable($callable);
         return $this->reflectArguments($reflection);
     }
 
-    private function getReflectionByCallable(callable $callable): \ReflectionFunctionAbstract
+    private function getReflectionByCallable(callable $callable)
     {
         if (is_string($callable)) {
             // Simple function call
@@ -115,7 +115,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         throw new \RuntimeException('Failed to perform an invocation: "' . $callable . '".'); // @codeCoverageIgnore
     }
 
-    protected function reflectMethod(DependencyContainer $container, string $methodName): DependencyContainer
+    protected function reflectMethod(DependencyContainer $container, $methodName)
     {
         $this->logger->debug('Will reflect method {classId}::{methodName}',
             [ 'classId' => $container->getClassId(), 'methodName' => $methodName ]);
@@ -132,7 +132,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         return $container->addMethod($methodName, $parameters);
     }
 
-    private function reflectArguments(\ReflectionFunctionAbstract $reflection): array
+    private function reflectArguments(\ReflectionFunctionAbstract $reflection)
     {
         // The parsed method parameters will be stored in here
         $methodParameters = [];
@@ -145,7 +145,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         return $methodParameters;
     }
 
-    private function reflectArgument(\ReflectionParameter $parameter): Argument
+    private function reflectArgument(\ReflectionParameter $parameter)
     {
         $argument = new Argument($parameter->getName());
 

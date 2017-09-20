@@ -74,8 +74,8 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         $params = $handler->getMethodParameters(TestClass01::class, 'testGetMethodParameters');
 
         verify($params)->equals([
-            'foo' => new Argument('foo', 'string'),
-            'bar' => new Argument('bar', 'int', null, true,23)
+            'foo' => new Argument('foo', null),
+            'bar' => new Argument('bar', null, null, true,23)
         ]);
     }
 
@@ -106,11 +106,11 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
             'array' => [ new Argument('array', 'array') ],
             'callable' => [ new Argument('callable', 'callable') ],
 //            'iterable' => [ new Argument('iterable', 'iterable') ], // php 7.1
-            'bool' => [ new Argument('bool', 'bool') ],
-            'float' => [ new Argument('float', 'float') ],
-            'int' => [ new Argument('int', 'int') ],
-            'string' => [ new Argument('string', 'string') ],
-            'variadic' => [ new Argument('variadic', 'variadic') ]
+            'bool' => [ new Argument('bool', null) ],
+            'float' => [ new Argument('float', null) ],
+            'int' => [ new Argument('int', null) ],
+            'string' => [ new Argument('string', null) ],
+//            'variadic' => [ new Argument('variadic', 'variadic') ] // php 7.0
         ];
     }
 
@@ -129,10 +129,10 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
     public function defaultValuesDataProvider()
     {
         return [
-            'int' => [ new Argument('int', 'int', null, true, 1) ],
-            'float' => [ new Argument('float', 'float', null, true, 10.2) ],
-            'string' => [ new Argument('string', 'string', null, true, 'string') ],
-            'bool' => [ new Argument('bool', 'bool', null, true, false) ],
+            'int' => [ new Argument('int', null, null, true, 1) ],
+            'float' => [ new Argument('float', null, null, true, 10.2) ],
+            'string' => [ new Argument('string', null, null, true, 'string') ],
+            'bool' => [ new Argument('bool', null, null, true, false) ],
             'array' => [ new Argument('array', 'array', null, true, [ 'foo' => 'bar' ]) ],
         ];
     }
@@ -152,10 +152,10 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
     public function defaultValuesNullDataProvider()
     {
         return [
-            'int' => [ new Argument('int', 'int', null, true, null) ],
-            'float' => [ new Argument('float', 'float', null, true, null) ],
-            'string' => [ new Argument('string', 'string', null, true, null) ],
-            'bool' => [ new Argument('bool', 'bool', null, true, null) ],
+            'int' => [ new Argument('int', null, null, true, null) ],
+            'float' => [ new Argument('float', null, null, true, null) ],
+            'string' => [ new Argument('string', null, null, true, null) ],
+            'bool' => [ new Argument('bool', null, null, true, null) ],
             'array' => [ new Argument('array', 'array', null, true, null) ],
         ];
     }
@@ -181,7 +181,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         global $closure;
 
         return array_map(function($value) { return [ $value ]; }, [
-            'emptyFunc' => function(string $foo){},
+            'emptyFunc' => function($foo){},
             'object' => [(new CallableClass()), 'callableMethod'],
             'globalFunc' => 'OS\DependencyInjector\Test\Helper\callableFunction',
             'staticString' => CallableStaticClass::class . '::callableStaticMethod',
@@ -204,7 +204,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         $params = $handler->getCallableParameters($callable);
 
         verify($params)->equals([
-            'foo' => new Argument('foo', 'string')
+            'foo' => new Argument('foo', null)
         ]);
     }
 }

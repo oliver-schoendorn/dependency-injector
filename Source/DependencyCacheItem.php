@@ -51,8 +51,8 @@ class DependencyCacheItem implements CacheItemInterface
      * @param \DateTimeInterface|null  $expiresAt
      */
     public function __construct(
-        string $key,
-        bool $hasValue,
+        $key,
+        $hasValue,
         DependencyContainer $value = null,
         \DateTimeInterface $expiresAt = null
     ) {
