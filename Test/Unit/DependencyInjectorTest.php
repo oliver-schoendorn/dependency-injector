@@ -9,6 +9,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use OS\DependencyInjector\DependencyInjector;
 use OS\DependencyInjector\ReflectionHandler;
 use OS\DependencyInjector\ReflectionHandlerInterface;
+use OS\DependencyInjector\Test\_support\Helper\Php7Helper;
 use OS\DependencyInjector\Test\_support\Helper\TestClass01;
 use OS\DependencyInjector\Test\_support\Helper\TestClass02;
 use OS\DependencyInjector\Test\_support\Helper\TestClass03;
@@ -23,6 +24,8 @@ use Psr\Log\LoggerInterface;
 
 class DependencyInjectorTest extends \Codeception\Test\Unit
 {
+    use Php7Helper;
+
     /**
      * @var \OS\DependencyInjector\Test\UnitTester
      */
@@ -266,7 +269,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithInvalidClassIdAsArguments()
     {
-        $this->expectException(\PHPUnit_Framework_Exception::class);
+        $this->expectException($this->isPhp7() ? \TypeError::class : \PHPUnit_Framework_Exception::class);
         $di = new DependencyInjector($this->handler, $this->logger);
         $di->resolve(TestClass02::class, [ 'test' => TestClass01::class ]);
     }

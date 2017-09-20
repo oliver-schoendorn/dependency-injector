@@ -149,7 +149,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
     {
         $argument = new Argument($parameter->getName());
 
-        if ($parameter->isVariadic()) {
+        if (method_exists($parameter, 'isVariadic') && $parameter->isVariadic()) {
             $argument->type = 'variadic';
         }
         elseif ($parameterClass = $parameter->getClass()) {

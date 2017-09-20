@@ -8,17 +8,21 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use OS\DependencyInjector\Argument;
 use OS\DependencyInjector\DependencyContainer;
 use OS\DependencyInjector\ReflectionHandler;
+use OS\DependencyInjector\Test\_support\Helper\Php7Helper;
 use OS\DependencyInjector\Test\_support\Helper\TestClass01;
 use OS\DependencyInjector\Test\_support\Helper\TestClass02;
 use OS\DependencyInjector\Test\Helper\CallableClass;
 use OS\DependencyInjector\Test\Helper\CallableClassWithInvoke;
 use OS\DependencyInjector\Test\Helper\CallableStaticClass;
 use OS\DependencyInjector\Test\Helper\ClassAccessor;
+use OS\DependencyInjector\Test\Helper\Unit;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class ReflectionHandlerTest extends \Codeception\Test\Unit
 {
+    use Php7Helper;
+
     /**
      * @var \OS\DependencyInjector\Test\UnitTester
      */
@@ -103,14 +107,14 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
     {
         return [
             'self' => [ new Argument('self', 'object', TestClass01::class) ],
-            'array' => [ new Argument('array', null) ],
-            'callable' => [ new Argument('callable', null) ],
-//            'iterable' => [ new Argument('iterable', 'iterable') ], // php 7.1
+            'array' => [ new Argument('array', $this->returnTypeIfPhp7('array')) ],
+            'callable' => [ new Argument('callable', $this->returnTypeIfPhp7('callable')) ],
+//            'iterable' => [ new Argument('iterable', $this->returnTypeIfPhp7('iterable') ], // php 7.1
             'bool' => [ new Argument('bool', null) ],
             'float' => [ new Argument('float', null) ],
             'int' => [ new Argument('int', null) ],
             'string' => [ new Argument('string', null) ],
-//            'variadic' => [ new Argument('variadic', 'variadic') ] // php 7.0
+//            'variadic' => [ new Argument('variadic', $this->returnTypeIfPhp7('variadic') ] // php 7.0
         ];
     }
 
@@ -133,7 +137,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
             'float' => [ new Argument('float', null, null, true, 10.2) ],
             'string' => [ new Argument('string', null, null, true, 'string') ],
             'bool' => [ new Argument('bool', null, null, true, false) ],
-            'array' => [ new Argument('array', null, null, true, [ 'foo' => 'bar' ]) ],
+            'array' => [ new Argument('array', $this->returnTypeIfPhp7('array'), null, true, [ 'foo' => 'bar' ]) ],
         ];
     }
 
@@ -156,7 +160,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
             'float' => [ new Argument('float', null, null, true, null) ],
             'string' => [ new Argument('string', null, null, true, null) ],
             'bool' => [ new Argument('bool', null, null, true, null) ],
-            'array' => [ new Argument('array', null, null, true, null) ],
+            'array' => [ new Argument('array', $this->returnTypeIfPhp7('array'), null, true, null) ],
         ];
     }
 
