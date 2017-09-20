@@ -150,7 +150,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
     public function testExpiresAtWithInvalidDate()
     {
         $item = new DependencyCacheItem('key', false);
-        $this->expectException('InvalidArgumentException');
+        $this->setExpectedException('InvalidArgumentException');
         $item->expiresAt('i am invalid');
     }
 

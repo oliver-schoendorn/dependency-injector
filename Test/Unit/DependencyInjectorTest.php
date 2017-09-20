@@ -269,21 +269,21 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithInvalidClassIdAsArguments()
     {
-        $this->expectException($this->isPhp7() ? \TypeError::class : \PHPUnit_Framework_Exception::class);
+        $this->setExpectedException($this->isPhp7() ? \TypeError::class : \PHPUnit_Framework_Exception::class);
         $di = new DependencyInjector($this->handler, $this->logger);
         $di->resolve(TestClass02::class, [ 'test' => TestClass01::class ]);
     }
 
     public function testResolveCircularDependency()
     {
-        $this->expectException('RuntimeException');
+        $this->setExpectedException('RuntimeException');
         $di = new DependencyInjector($this->handler, $this->logger);
         $di->resolve(TestClassCircular01::class);
     }
 
     public function testResolveWithMissingArgument()
     {
-        $this->expectException('InvalidArgumentException');
+        $this->setExpectedException('InvalidArgumentException');
         $di = new DependencyInjector($this->handler, $this->logger);
         $di->resolve(TestClass04::class);
     }
