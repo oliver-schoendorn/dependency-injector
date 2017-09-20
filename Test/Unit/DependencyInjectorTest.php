@@ -266,7 +266,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithInvalidClassIdAsArguments()
     {
-        $this->expectException('TypeError');
+        $this->expectException(\PHPUnit_Framework_Exception::class);
         $di = new DependencyInjector($this->handler, $this->logger);
         $di->resolve(TestClass02::class, [ 'test' => TestClass01::class ]);
     }

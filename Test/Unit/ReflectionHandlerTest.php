@@ -103,8 +103,8 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
     {
         return [
             'self' => [ new Argument('self', 'object', TestClass01::class) ],
-            'array' => [ new Argument('array', 'array') ],
-            'callable' => [ new Argument('callable', 'callable') ],
+            'array' => [ new Argument('array', null) ],
+            'callable' => [ new Argument('callable', null) ],
 //            'iterable' => [ new Argument('iterable', 'iterable') ], // php 7.1
             'bool' => [ new Argument('bool', null) ],
             'float' => [ new Argument('float', null) ],
@@ -133,7 +133,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
             'float' => [ new Argument('float', null, null, true, 10.2) ],
             'string' => [ new Argument('string', null, null, true, 'string') ],
             'bool' => [ new Argument('bool', null, null, true, false) ],
-            'array' => [ new Argument('array', 'array', null, true, [ 'foo' => 'bar' ]) ],
+            'array' => [ new Argument('array', null, null, true, [ 'foo' => 'bar' ]) ],
         ];
     }
 
@@ -156,7 +156,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
             'float' => [ new Argument('float', null, null, true, null) ],
             'string' => [ new Argument('string', null, null, true, null) ],
             'bool' => [ new Argument('bool', null, null, true, null) ],
-            'array' => [ new Argument('array', 'array', null, true, null) ],
+            'array' => [ new Argument('array', null, null, true, null) ],
         ];
     }
 

@@ -156,7 +156,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
             $argument->type = 'object';
             $argument->classId = $parameterClass->getName();
         }
-        elseif ($parameter->hasType() && $parameterType = $parameter->getType()) {
+        elseif (method_exists($parameter, 'hasType') && $parameter->hasType() && $parameterType = $parameter->getType()) {
             $argument->type = (string) $parameterType;
             $argument->optional = (bool) $parameterType->allowsNull();
         }
