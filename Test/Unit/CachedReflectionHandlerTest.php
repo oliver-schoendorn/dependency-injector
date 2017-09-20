@@ -24,7 +24,6 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
     private function getCacheMockBuilder()
     {
         return $this->getMockBuilder(CacheItemPoolInterface::class)
-            ->setMethodsExcept([])
             ->getMockForAbstractClass();
     }
 
