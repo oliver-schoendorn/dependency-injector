@@ -34,11 +34,6 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     protected $reflectionHandler;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @var string[]
      */
     protected $aliases = [];

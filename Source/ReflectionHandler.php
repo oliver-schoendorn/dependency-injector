@@ -28,11 +28,6 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
     use LoggerAwareTrait;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * DependencyReflectionHandler constructor.
      *
      * @param LoggerInterface|null        $logger
