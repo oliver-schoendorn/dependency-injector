@@ -125,7 +125,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
         $di = new DependencyInjector($this->handler, $this->logger);
         $accessor = new ClassAccessor($di);
 
-        verify($di->alias(TestClass01::class, TestClass02::class))->same($di);
+        verify($di->alias(TestClass02::class, TestClass01::class))->same($di);
 
         $alias = $accessor->getProperty('aliases')[TestClass02::class];
         verify($alias)->equals(TestClass01::class);
@@ -182,7 +182,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     {
         $instance = new TestClass01();
         $di = new DependencyInjector($this->handler, $this->logger);
-        $di->alias(TestClass01::class, 'ClassAlias');
+        $di->alias('ClassAlias', TestClass01::class);
         $di->share($instance);
 
         $actualInstance = $di->resolve('ClassAlias');
@@ -192,7 +192,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testResolveAliasedInstance()
     {
         $di = new DependencyInjector($this->handler, $this->logger);
-        $di->alias(TestClass01::class, 'foo');
+        $di->alias('foo', TestClass01::class);
 
         verify($di->resolve('foo'))->isInstanceOf(TestClass01::class);
     }

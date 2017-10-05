@@ -100,7 +100,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
         $this->sharedInstances[$classId] = $classInstance;
 
         if ($alias) {
-            $this->alias($classId, $alias);
+            $this->alias($alias, $classId);
         }
 
         return $this;
@@ -132,7 +132,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     public function alias($original, $alias)
     {
         $this->logger->debug('Registered alias for class {classId} to {alias}', [ 'classId' => $original, 'alias' => $alias ]);
-        $this->aliases[$alias] = $original;
+        $this->aliases[$original] = $alias;
         return $this;
     }
 
