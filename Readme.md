@@ -1,6 +1,8 @@
 # PHP7 Dependency Injector
 
 [![Build Status](https://travis-ci.org/oliver-schoendorn/dependency-injector.svg?branch=master)](https://travis-ci.org/oliver-schoendorn/dependency-injector)
+[![Coverage Status](https://coveralls.io/repos/github/oliver-schoendorn/dependency-injector/badge.svg?branch=master)](https://coveralls.io/github/oliver-schoendorn/dependency-injector?branch=master)
+
 
 ## Usage
 

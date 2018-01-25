@@ -132,7 +132,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     public function alias(string $original, string $alias): DependencyInjectorInterface
     {
         $this->logger->debug('Registered alias for class {classId} to {alias}', [ 'classId' => $original, 'alias' => $alias ]);
-        $this->aliases[$alias] = $original;
+        $this->aliases[$original] = $alias;
         return $this;
     }
 

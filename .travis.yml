@@ -11,4 +11,7 @@ before_script:
   - php vendor/bin/codecept build
 
 script:
-  - php vendor/bin/codecept run --coverage
+  - php vendor/bin/codecept run --coverage --coverage-xml
+
+after_success:
+  - php vendor/bin/php-coveralls
