@@ -17,7 +17,6 @@
 
 namespace OS\DependencyInjector;
 
-
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -67,7 +66,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
     public function getMethodParameters(string $classId, string $methodName = '__constructor'): array
     {
         $container = $this->getDependencyContainer($classId);
-        if ( ! $container->hasMethod($methodName)) {
+        if (! $container->hasMethod($methodName)) {
             $this->reflectMethod($container, $methodName);
         }
         return $container->getParameters($methodName);
@@ -86,39 +85,56 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
 
     private function getReflectionByCallable(callable $callable): \ReflectionFunctionAbstract
     {
-        if (is_string($callable)) {
-            // Simple function call
-            if (function_exists($callable)) {
-                return new \ReflectionFunction($callable);
-            }
-
-            if(strpos($callable, '::') !== false) {
-                list($classId, $method) = explode('::', $callable, 2);
-                return new \ReflectionMethod($classId, $method);
-            }
+        if (is_string($callable) && ($reflection = $this->getReflectionByCallableString($callable))) {
+            return $reflection;
         }
 
         if ($callable instanceof \Closure) {
             return new \ReflectionMethod($callable, '__invoke');
         }
 
-        if (is_callable($callable)) {
-            // __invoke call
-            if (is_object($callable)) {
-                return new \ReflectionMethod($callable, '__invoke');
-            }
-            if (is_array($callable) && count($callable) === 2) {
-                return new \ReflectionMethod($callable[0], $callable[1]);
-            }
+        if (is_callable($callable) && ($reflection = $this->getReflectionByCallableReference($callable))) {
+            return $reflection;
         }
 
         throw new \RuntimeException('Failed to perform an invocation: "' . $callable . '".'); // @codeCoverageIgnore
     }
 
+    private function getReflectionByCallableString(string $callable)
+    {
+        // Simple function call
+        if (function_exists($callable)) {
+            return new \ReflectionFunction($callable);
+        }
+
+        // Static class call
+        if (strpos($callable, '::') !== false) {
+            list($classId, $method) = explode('::', $callable, 2);
+            return new \ReflectionMethod($classId, $method);
+        }
+
+        return null;
+    }
+
+    private function getReflectionByCallableReference($callable)
+    {
+        // __invoke call
+        if (is_object($callable)) {
+            return new \ReflectionMethod($callable, '__invoke');
+        }
+        if (is_array($callable) && count($callable) === 2) {
+            return new \ReflectionMethod($callable[0], $callable[1]);
+        }
+
+        return null;
+    }
+
     protected function reflectMethod(DependencyContainer $container, string $methodName): DependencyContainer
     {
-        $this->logger->debug('Will reflect method {classId}::{methodName}',
-            [ 'classId' => $container->getClassId(), 'methodName' => $methodName ]);
+        $this->logger->debug(
+            'Will reflect method {classId}::{methodName}',
+            [ 'classId' => $container->getClassId(), 'methodName' => $methodName ]
+        );
 
         $methodReflection = $methodName === '__constructor'
             ? (new \ReflectionClass($container->getClassId()))->getConstructor()
@@ -151,12 +167,10 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
 
         if ($parameter->isVariadic()) {
             $argument->type = 'variadic';
-        }
-        elseif ($parameterClass = $parameter->getClass()) {
+        } elseif ($parameterClass = $parameter->getClass()) {
             $argument->type = 'object';
             $argument->classId = $parameterClass->getName();
-        }
-        elseif ($parameter->hasType() && $parameterType = $parameter->getType()) {
+        } elseif ($parameter->hasType() && $parameterType = $parameter->getType()) {
             $argument->type = (string) $parameterType;
             $argument->optional = (bool) $parameterType->allowsNull();
         }
