@@ -17,4 +17,4 @@ script:
   - php vendor/bin/codecept run --coverage --coverage-xml
 
 after_success:
-  - php vendor/bin/php-coveralls
+  - XDEBUG_MODE=coverage php vendor/bin/php-coveralls
