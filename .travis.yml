@@ -14,7 +14,7 @@ before_script:
   - php vendor/bin/codecept build
 
 script:
-  - php vendor/bin/codecept run --coverage --coverage-xml
+  - XDEBUG_MODE=coverage php vendor/bin/codecept run --coverage --coverage-xml
 
 after_success:
-  - XDEBUG_MODE=coverage php vendor/bin/php-coveralls
+  - php vendor/bin/php-coveralls
