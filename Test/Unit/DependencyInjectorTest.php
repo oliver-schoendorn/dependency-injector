@@ -15,11 +15,14 @@ use OS\DependencyInjector\Test\_support\Helper\TestClass03;
 use OS\DependencyInjector\Test\_support\Helper\TestClass04;
 use OS\DependencyInjector\Test\_support\Helper\TestClass05;
 use OS\DependencyInjector\Test\_support\Helper\TestClassCircular01;
+use OS\DependencyInjector\Test\_support\Helper\TestInterface;
+use OS\DependencyInjector\Test\_support\Helper\TestInterfaceImplementation;
 use OS\DependencyInjector\Test\Helper\CallableClass;
 use OS\DependencyInjector\Test\Helper\CallableClassWithInvoke;
 use OS\DependencyInjector\Test\Helper\CallableStaticClass;
 use OS\DependencyInjector\Test\Helper\ClassAccessor;
 use Psr\Log\LoggerInterface;
+use function verify;
 
 class DependencyInjectorTest extends \Codeception\Test\Unit
 {
@@ -100,8 +103,8 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
         verify($shares[TestClass01::class])->same($instance);
 
         $aliases = $accessor->getProperty('aliases');
-        verify(isset($aliases[TestClass01::class]))->true();
-        verify($aliases[TestClass01::class])->equals($alias);
+        verify(isset($aliases[$alias]))->true();
+        verify($aliases[$alias])->equals(TestClass01::class);
     }
 
     public function testDelegate()
@@ -126,6 +129,28 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
         $alias = $accessor->getProperty('aliases')[TestClass01::class];
         verify($alias)->equals(TestClass02::class);
+    }
+
+    public function testInterfaceSubstitution()
+    {
+        $di = new DependencyInjector($this->handler, $this->logger);
+
+        $di->alias(TestInterface::class, TestInterfaceImplementation::class);
+        $instance = $di->resolve(TestInterface::class);
+
+        verify($instance)->isInstanceOf(TestInterface::class);
+        verify($instance)->isInstanceOf(TestInterfaceImplementation::class);
+    }
+
+    public function testSharedDelegate()
+    {
+        $di = new DependencyInjector($this->handler, $this->logger);
+
+        $sharedInstance = new TestInterfaceImplementation();
+        $di->share($sharedInstance, TestInterface::class);
+
+        verify($di->resolve(TestInterface::class))->same($sharedInstance);
+        verify($di->resolve(TestInterfaceImplementation::class))->same($sharedInstance);
     }
 
     public function testConfigure()

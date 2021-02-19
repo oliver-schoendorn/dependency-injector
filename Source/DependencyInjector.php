@@ -100,7 +100,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
         $this->sharedInstances[$classId] = $classInstance;
 
         if ($alias) {
-            $this->alias($classId, $alias);
+            $this->alias($alias, $classId);
         }
 
         return $this;
