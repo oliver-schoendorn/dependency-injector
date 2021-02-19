@@ -1,8 +1,8 @@
 {
     "name": "oliver-schoendorn/dependency-injector",
-    "description": "",
+    "description": "A very simple dependency injector that supports instance creation and auto wiring of classes, class methods and functions. Additionally it provides simple means of caching the necessary reflections to boost performance in heavy load environments.",
     "type": "library",
-    "keywords": [],
+    "keywords": [ "dependency injector", "dependency injection", "auto wiring", "cached reflections" ],
     "license": "Apache-2.0",
     "authors": [
         {
