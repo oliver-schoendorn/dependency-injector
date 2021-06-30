@@ -12,10 +12,15 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.4||^8.0",
+        "php": "^7.4|^8.0",
         "psr/cache": "^1.0",
         "psr/container": "^2.0",
         "psr/log": "^1.1"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0.2"
+        }
     },
     "autoload": {
         "psr-4": {
@@ -29,7 +34,6 @@
     },
     "require-dev": {
         "codeception/verify": "^2.1",
-        "monolog/monolog": "^1.26",
         "php-coveralls/php-coveralls": "^2.4"
     }
 }
