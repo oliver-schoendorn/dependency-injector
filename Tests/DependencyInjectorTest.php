@@ -1,84 +1,40 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
-use Codeception\Configuration;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Monolog\Processor\PsrLogMessageProcessor;
 use OS\DependencyInjector\DependencyInjector;
 use OS\DependencyInjector\ReflectionHandler;
 use OS\DependencyInjector\ReflectionHandlerInterface;
-use OS\DependencyInjector\Test\_support\Helper\TestClass01;
-use OS\DependencyInjector\Test\_support\Helper\TestClass02;
-use OS\DependencyInjector\Test\_support\Helper\TestClass03;
-use OS\DependencyInjector\Test\_support\Helper\TestClass04;
-use OS\DependencyInjector\Test\_support\Helper\TestClass05;
-use OS\DependencyInjector\Test\_support\Helper\TestClassCircular01;
-use OS\DependencyInjector\Test\_support\Helper\TestInterface;
-use OS\DependencyInjector\Test\_support\Helper\TestInterfaceImplementation;
-use OS\DependencyInjector\Test\Helper\CallableClass;
-use OS\DependencyInjector\Test\Helper\CallableClassWithInvoke;
-use OS\DependencyInjector\Test\Helper\CallableStaticClass;
-use OS\DependencyInjector\Test\Helper\ClassAccessor;
-use Psr\Log\LoggerInterface;
+use OS\DependencyInjector\Tests\Helper\TestClass01;
+use OS\DependencyInjector\Tests\Helper\TestClass02;
+use OS\DependencyInjector\Tests\Helper\TestClass03;
+use OS\DependencyInjector\Tests\Helper\TestClass04;
+use OS\DependencyInjector\Tests\Helper\TestClass05;
+use OS\DependencyInjector\Tests\Helper\TestClassCircular01;
+use OS\DependencyInjector\Tests\Helper\TestInterface;
+use OS\DependencyInjector\Tests\Helper\TestInterfaceImplementation;
+use OS\DependencyInjector\Tests\Helper\CallableClass;
+use OS\DependencyInjector\Tests\Helper\CallableClassWithInvoke;
+use OS\DependencyInjector\Tests\Helper\CallableStaticClass;
+use OS\DependencyInjector\Tests\Helper\ClassAccessor;
+use PHPUnit\Framework\TestCase;
 use function verify;
+use const DIRECTORY_SEPARATOR;
 
-class DependencyInjectorTest extends \Codeception\Test\Unit
+class DependencyInjectorTest extends TestCase
 {
-    /**
-     * @var \OS\DependencyInjector\Test\UnitTester
-     */
-    protected $tester;
-
-    /**
-     * @var ReflectionHandlerInterface
-     */
-    private $handler;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var Logger
-     */
-    private static $testLogger;
-
-    public static function setUpBeforeClass()
+    private ReflectionHandlerInterface $handler;
+    
+    public function setUp(): void
     {
-        $outputDir = codecept_output_dir();
-        $logFile = $outputDir . DIRECTORY_SEPARATOR . 'DependencyInjector.log';
-
-        $handler = new StreamHandler(fopen($logFile, 'w'));
-        static::$testLogger = new \Monolog\Logger('', [ $handler ]);
-        static::$testLogger->pushProcessor(new PsrLogMessageProcessor());
-
-        static::$testLogger->useMicrosecondTimestamps(true);
-        static::$testLogger->notice('Started unit test');
-
-        parent::setUpBeforeClass();
-    }
-
-    public function _before()
-    {
-        $this->logger = static::$testLogger;
-        $this->logger->notice('START {testName}', [ 'testName' => $this->getName() ]);
         $this->handler = new ReflectionHandler();
-    }
-
-    public function _after()
-    {
-        $this->logger->notice('FINISH {testName}' . PHP_EOL, [ 'testName' => $this->getName() ]);
-        $this->logger->notice('=============================================================================');
     }
 
     public function testShare()
     {
-        verify($this->handler)->isInstanceOf(ReflectionHandlerInterface::class);
+        verify($this->handler)->instanceOf(ReflectionHandlerInterface::class);
         $instance = new TestClass01();
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $accessor = new ClassAccessor($di);
 
         verify($di->share($instance))->same($di);
@@ -90,10 +46,10 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testShareWithAlias()
     {
-        verify($this->handler)->isInstanceOf(ReflectionHandlerInterface::class);
+        verify($this->handler)->instanceOf(ReflectionHandlerInterface::class);
         $alias = 'a random alias';
         $instance = new TestClass01();
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $accessor = new ClassAccessor($di);
 
         verify($di->share($instance, $alias))->same($di);
@@ -111,7 +67,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     {
         $delegate = function() {};
 
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $accessor = new ClassAccessor($di);
 
         verify($di->delegate(TestClass01::class, $delegate))->same($di);
@@ -122,7 +78,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testAlias()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $accessor = new ClassAccessor($di);
 
         verify($di->alias(TestClass01::class, TestClass02::class))->same($di);
@@ -133,18 +89,18 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testInterfaceSubstitution()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
 
         $di->alias(TestInterface::class, TestInterfaceImplementation::class);
         $instance = $di->resolve(TestInterface::class);
 
-        verify($instance)->isInstanceOf(TestInterface::class);
-        verify($instance)->isInstanceOf(TestInterfaceImplementation::class);
+        verify($instance)->instanceOf(TestInterface::class);
+        verify($instance)->instanceOf(TestInterfaceImplementation::class);
     }
 
     public function testSharedDelegate()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
 
         $sharedInstance = new TestInterfaceImplementation();
         $di->share($sharedInstance, TestInterface::class);
@@ -156,19 +112,19 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testConfigure()
     {
         $arguments = [ ':optional' => TestClass05::class ];
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
 
         $response = $di->configure(TestClass01::class, $arguments);
         $instance = $di->resolve(TestClass01::class);
 
         verify($response)->same($di);
-        verify($instance->constructorArgument)->isInstanceOf(TestClass05::class);
+        verify($instance->constructorArgument)->instanceOf(TestClass05::class);
     }
 
     public function testConfigureCanBeOverwrittenWithPlainKey()
     {
         $arguments = [ ':optional' => TestClass03::class ];
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
 
         $response = $di->configure(TestClass01::class, $arguments);
         $instance = $di->resolve(TestClass01::class, [ 'optional' => 'bar' ]);
@@ -180,20 +136,20 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testConfigureCanBeOverwrittenWithClassKey()
     {
         $arguments = [ ':optional' => TestClass03::class ];
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
 
         $response = $di->configure(TestClass01::class, $arguments);
         $instance = $di->resolve(TestClass01::class,
             [ ':optional' => TestClass04::class, 'requiredParam' => true ]);
 
         verify($response)->same($di);
-        verify($instance->constructorArgument)->isInstanceOf(TestClass04::class);
+        verify($instance->constructorArgument)->instanceOf(TestClass04::class);
     }
 
     public function testResolveSharedInstance()
     {
         $instance = new TestClass01();
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->share($instance);
 
         $actualInstance = $di->resolve(TestClass01::class);
@@ -203,7 +159,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testResolveSharedAndAliasedInstance()
     {
         $instance = new TestClass01();
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->alias('ClassAlias', TestClass01::class);
         $di->share($instance);
 
@@ -213,19 +169,19 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveAliasedInstance()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->alias('foo', TestClass01::class);
 
-        verify($di->resolve('foo'))->isInstanceOf(TestClass01::class);
+        verify($di->resolve('foo'))->instanceOf(TestClass01::class);
     }
 
     public function testResolveWithSimpleDependency()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $instance = $di->resolve(TestClass02::class);
 
-        verify($instance)->isInstanceOf(TestClass02::class);
-        verify($instance->constructorArguments['test'])->isInstanceOf(TestClass01::class);
+        verify($instance)->instanceOf(TestClass02::class);
+        verify($instance->constructorArguments['test'])->instanceOf(TestClass01::class);
         verify($instance->constructorArguments['test']->didCallConstructor)->equals(true);
         verify($instance->constructorArguments['foo'])->equals('empty');
         verify($instance->constructorArguments['bar'])->equals(12);
@@ -233,11 +189,11 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithSimpleDependencyAndSimpleArguments()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $instance = $di->resolve(TestClass02::class, [ 'foo' => 'not empty', 'bar' => 23]);
 
-        verify($instance)->isInstanceOf(TestClass02::class);
-        verify($instance->constructorArguments['test'])->isInstanceOf(TestClass01::class);
+        verify($instance)->instanceOf(TestClass02::class);
+        verify($instance->constructorArguments['test'])->instanceOf(TestClass01::class);
         verify($instance->constructorArguments['test']->didCallConstructor)->equals(true);
         verify($instance->constructorArguments['foo'])->equals('not empty');
         verify($instance->constructorArguments['bar'])->equals(23);
@@ -245,9 +201,9 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithComplexArguments()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $instance = $di->resolve(TestClass02::class, [ 'foo' => TestClass01::class ]);
-        verify($instance->constructorArguments['test'])->isInstanceOf(TestClass01::class);
+        verify($instance->constructorArguments['test'])->instanceOf(TestClass01::class);
         verify($instance->constructorArguments['test']->didCallConstructor)->equals(true);
         verify($instance->constructorArguments['foo'])->equals(TestClass01::class);
         verify($instance->constructorArguments['bar'])->equals(12);
@@ -255,9 +211,9 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWillPassArgumentsToChildDependencies()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $instance = $di->resolve(TestClass02::class, [ 'optional' => 'value' ]);
-        verify($instance->constructorArguments['test'])->isInstanceOf(TestClass01::class);
+        verify($instance->constructorArguments['test'])->instanceOf(TestClass01::class);
         verify($instance->constructorArguments['test']->didCallConstructor)->equals(true);
         verify($instance->constructorArguments['test']->constructorArgument)->equals('value');
         verify($instance->constructorArguments['foo'])->equals('empty');
@@ -266,24 +222,25 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     public function testResolveWithDelegate()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
-        $di->delegate('foo', function(DependencyInjector $injector, string $classId, array $arguments = []) use ($di)
+        $di = new DependencyInjector($this->handler);
+        $instance = new class {};
+        $di->delegate('foo', function(DependencyInjector $injector, string $classId, array $arguments = []) use ($di, $instance)
         {
             verify($injector)->same($di);
             verify($classId)->equals('foo');
             verify($arguments)->equals([ 'test' => 'argument' ]);
 
-            return 123456;
+            return $instance;
         });
         $response = $di->resolve('foo', ['test' => 'argument']);
-        verify($response)->equals(123456);
+        verify($response)->same($instance);
     }
 
     public function testResolveWithValidClassIdAsArguments()
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $instance = $di->resolve(TestClass02::class, [ ':test' => TestClass03::class ]);
-        verify($instance->constructorArguments['test'])->isInstanceOf(TestClass03::class);
+        verify($instance->constructorArguments['test'])->instanceOf(TestClass03::class);
         verify($instance->constructorArguments['test']->didCallConstructor)->equals(true);
         verify($instance->constructorArguments['foo'])->equals('empty');
         verify($instance->constructorArguments['bar'])->equals(12);
@@ -292,27 +249,27 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
     public function testResolveWithInvalidClassIdAsArguments()
     {
         $this->expectException('TypeError');
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->resolve(TestClass02::class, [ 'test' => TestClass01::class ]);
     }
 
     public function testResolveCircularDependency()
     {
         $this->expectException('RuntimeException');
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->resolve(TestClassCircular01::class);
     }
 
     public function testResolveWithMissingArgument()
     {
         $this->expectException('InvalidArgumentException');
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         $di->resolve(TestClass04::class);
     }
 
-    public function invocationDataProvider()
+    public function invocationDataProvider(): array
     {
-        $helperDir = Configuration::supportDir() . DIRECTORY_SEPARATOR . 'Helper';
+        $helperDir = __DIR__ . DIRECTORY_SEPARATOR . 'Helper';
         $callableFile = $helperDir . DIRECTORY_SEPARATOR . 'callable.php';
         require_once $callableFile;
 
@@ -321,7 +278,7 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
         return array_map(function($value) { return [ $value ]; }, [
             'emptyFunc' => function(string $foo) { return true; },
             'object' => [(new CallableClass()), 'callableMethod'],
-            'globalFunc' => 'OS\DependencyInjector\Test\Helper\callableFunction',
+            'globalFunc' => 'OS\DependencyInjector\Tests\Helper\callableFunction',
             'staticString' => CallableStaticClass::class . '::callableStaticMethod',
             'staticArray' => [CallableStaticClass::class, 'callableStaticMethod'],
             'instanceInvoke' => new CallableClassWithInvoke(),
@@ -334,11 +291,11 @@ class DependencyInjectorTest extends \Codeception\Test\Unit
 
     /**
      * @dataProvider invocationDataProvider
-     * @param callable $callable
+     * @param callable|string|array $callable
      */
     public function testInvoke($callable)
     {
-        $di = new DependencyInjector($this->handler, $this->logger);
+        $di = new DependencyInjector($this->handler);
         verify($di->invoke($callable, [ ':foo' => function() { return 'bar'; } ]))->equals(true);
     }
 }

@@ -15,12 +15,39 @@
  * limitations under the License.
  */
 
-namespace OS\DependencyInjector\Test\_support\Helper;
 
+namespace OS\DependencyInjector\Tests\Helper;
 
-class TestInterfaceImplementation implements TestInterface
+function callableFunction(string $foo)
 {
-    public function returnTrue(): bool
+    return true;
+}
+
+class CallableClass
+{
+    public function callableMethod(string $foo)
+    {
+        return true;
+    }
+}
+
+class CallableClassWithInvoke
+{
+    public function __invoke(string $foo)
+    {
+        return true;
+    }
+}
+
+global $closure;
+$closure = function(string $foo)
+{
+    return true;
+};
+
+class CallableStaticClass
+{
+    public static function callableStaticMethod(string $foo)
     {
         return true;
     }

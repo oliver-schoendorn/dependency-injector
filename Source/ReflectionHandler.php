@@ -17,10 +17,18 @@
 
 namespace OS\DependencyInjector;
 
+use Closure;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use ReflectionParameter;
+use RuntimeException;
 
 class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterface
 {
@@ -62,6 +70,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
      * @param string $methodName
      *
      * @return Argument[]
+     * @throws ReflectionException
      */
     public function getMethodParameters(string $classId, string $methodName = '__constructor'): array
     {
@@ -73,62 +82,84 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
     }
 
     /**
-     * @param callable $callable
+     * @param callable|string|array $callable
      *
      * @return Argument[]
+     * @throws ReflectionException
      */
-    public function getCallableParameters(callable $callable): array
+    public function getCallableParameters($callable): array
     {
         $reflection = $this->getReflectionByCallable($callable);
         return $this->reflectArguments($reflection);
     }
 
-    private function getReflectionByCallable(callable $callable): \ReflectionFunctionAbstract
+    /**
+     * @param callable|string|array $callable
+     *
+     * @return ReflectionFunctionAbstract
+     * @throws ReflectionException
+     */
+    private function getReflectionByCallable($callable): ReflectionFunctionAbstract
     {
         if (is_string($callable) && ($reflection = $this->getReflectionByCallableString($callable))) {
             return $reflection;
         }
 
-        if ($callable instanceof \Closure) {
-            return new \ReflectionMethod($callable, '__invoke');
+        if ($callable instanceof Closure) {
+            return new ReflectionMethod($callable, '__invoke');
         }
 
         if (is_callable($callable) && ($reflection = $this->getReflectionByCallableReference($callable))) {
             return $reflection;
         }
 
-        throw new \RuntimeException('Failed to perform an invocation: "' . $callable . '".'); // @codeCoverageIgnore
+        throw new RuntimeException('Failed to perform an invocation: "' . $callable . '".'); // @codeCoverageIgnore
     }
 
-    private function getReflectionByCallableString(string $callable)
+    /**
+     * @param string $callable
+     *
+     * @return ReflectionFunctionAbstract|null
+     * @throws ReflectionException
+     */
+    private function getReflectionByCallableString(string $callable): ?ReflectionFunctionAbstract
     {
         // Simple function call
         if (function_exists($callable)) {
-            return new \ReflectionFunction($callable);
+            return new ReflectionFunction($callable);
         }
 
         // Static class call
         if (strpos($callable, '::') !== false) {
             list($classId, $method) = explode('::', $callable, 2);
-            return new \ReflectionMethod($classId, $method);
+            return new ReflectionMethod($classId, $method);
         }
 
         return null;
     }
 
-    private function getReflectionByCallableReference($callable)
+    /**
+     * @param $callable
+     *
+     * @return ReflectionFunctionAbstract|null
+     * @throws ReflectionException
+     */
+    private function getReflectionByCallableReference($callable): ?ReflectionFunctionAbstract
     {
         // __invoke call
         if (is_object($callable)) {
-            return new \ReflectionMethod($callable, '__invoke');
+            return new ReflectionMethod($callable, '__invoke');
         }
         if (is_array($callable) && count($callable) === 2) {
-            return new \ReflectionMethod($callable[0], $callable[1]);
+            return new ReflectionMethod($callable[0], $callable[1]);
         }
 
         return null;
     }
 
+    /**
+     * @throws ReflectionException
+     */
     protected function reflectMethod(DependencyContainer $container, string $methodName): DependencyContainer
     {
         $this->logger->debug(
@@ -137,8 +168,8 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         );
 
         $methodReflection = $methodName === '__constructor'
-            ? (new \ReflectionClass($container->getClassId()))->getConstructor()
-            : new \ReflectionMethod($container->getClassId(), $methodName);
+            ? (new ReflectionClass($container->getClassId()))->getConstructor()
+            : new ReflectionMethod($container->getClassId(), $methodName);
 
         // If no constructor was defined, return empty argument list
         $parameters = $methodReflection
@@ -148,7 +179,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         return $container->addMethod($methodName, $parameters);
     }
 
-    private function reflectArguments(\ReflectionFunctionAbstract $reflection): array
+    private function reflectArguments(ReflectionFunctionAbstract $reflection): array
     {
         // The parsed method parameters will be stored in here
         $methodParameters = [];
@@ -161,7 +192,10 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         return $methodParameters;
     }
 
-    private function reflectArgument(\ReflectionParameter $parameter): Argument
+    /**
+     * @throws ReflectionException
+     */
+    private function reflectArgument(ReflectionParameter $parameter): Argument
     {
         $argument = new Argument($parameter->getName());
 
@@ -172,7 +206,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
             $argument->classId = $parameterClass->getName();
         } elseif ($parameter->hasType() && $parameterType = $parameter->getType()) {
             $argument->type = (string) $parameterType;
-            $argument->optional = (bool) $parameterType->allowsNull();
+            $argument->optional = $parameterType->allowsNull();
         }
 
         if ($parameter->isDefaultValueAvailable()) {

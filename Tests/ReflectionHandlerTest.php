@@ -1,49 +1,23 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
-use Codeception\Configuration;
-use Monolog\Handler\StreamHandler;
-use Monolog\Processor\PsrLogMessageProcessor;
 use OS\DependencyInjector\Argument;
 use OS\DependencyInjector\DependencyContainer;
 use OS\DependencyInjector\ReflectionHandler;
-use OS\DependencyInjector\Test\_support\Helper\TestClass01;
-use OS\DependencyInjector\Test\_support\Helper\TestClass02;
-use OS\DependencyInjector\Test\Helper\CallableClass;
-use OS\DependencyInjector\Test\Helper\CallableClassWithInvoke;
-use OS\DependencyInjector\Test\Helper\CallableStaticClass;
-use OS\DependencyInjector\Test\Helper\ClassAccessor;
+use OS\DependencyInjector\Tests\Helper\TestClass01;
+use OS\DependencyInjector\Tests\Helper\TestClass02;
+use OS\DependencyInjector\Tests\Helper\CallableClass;
+use OS\DependencyInjector\Tests\Helper\CallableClassWithInvoke;
+use OS\DependencyInjector\Tests\Helper\CallableStaticClass;
+use OS\DependencyInjector\Tests\Helper\ClassAccessor;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use ReflectionException;
 
-class ReflectionHandlerTest extends \Codeception\Test\Unit
+class ReflectionHandlerTest extends TestCase
 {
-    /**
-     * @var \OS\DependencyInjector\Test\UnitTester
-     */
-    protected $tester;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    protected function setUp()
-    {
-        $outputDir = codecept_output_dir();
-        $logFile = $outputDir . DIRECTORY_SEPARATOR . 'ReflectionHandlerTest.log';
-
-        $handler = new StreamHandler(fopen($logFile, 'w'));
-        $this->logger = new \Monolog\Logger('', [ $handler ]);
-        $this->logger->pushProcessor(new PsrLogMessageProcessor());
-
-        $this->logger->useMicrosecondTimestamps(true);
-        $this->logger->notice('Started unit test');
-
-        parent::setUp();
-    }
-
     public function testConstructorWithoutLogger()
     {
         $logger = new NullLogger();
@@ -58,19 +32,19 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         $handler = new ReflectionHandler();
         $accessor = new ClassAccessor($handler);
 
-        verify($accessor->getProperty('logger'))->isInstanceOf(LoggerInterface::class);
+        verify($accessor->getProperty('logger'))->instanceOf(LoggerInterface::class);
     }
 
     public function testGetDependencyContainer()
     {
         $handler = new ReflectionHandler();
         $container = $handler->getDependencyContainer('FooBar');
-        verify($container)->isInstanceOf(DependencyContainer::class);
+        verify($container)->instanceOf(DependencyContainer::class);
     }
 
     public function testGetMethodParametersWithPrimitives()
     {
-        $handler = new ReflectionHandler($this->logger);
+        $handler = new ReflectionHandler();
         $params = $handler->getMethodParameters(TestClass01::class, 'testGetMethodParameters');
 
         verify($params)->equals([
@@ -99,13 +73,13 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         ]);
     }
 
-    public function phpTypesDataProvider()
+    public function phpTypesDataProvider(): array
     {
         return [
             'self' => [ new Argument('self', 'object', TestClass01::class) ],
             'array' => [ new Argument('array', 'array') ],
             'callable' => [ new Argument('callable', 'callable') ],
-//            'iterable' => [ new Argument('iterable', 'iterable') ], // php 7.1
+            'iterable' => [ new Argument('iterable', 'iterable') ], // php 7.1
             'bool' => [ new Argument('bool', 'bool') ],
             'float' => [ new Argument('float', 'float') ],
             'int' => [ new Argument('int', 'int') ],
@@ -118,6 +92,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
      * @dataProvider phpTypesDataProvider
      *
      * @param Argument $type
+     * @throws ReflectionException
      */
     public function testGetMethodParametersWithPhpType(Argument $type)
     {
@@ -126,7 +101,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         verify($params[$type->name])->equals($type);
     }
 
-    public function defaultValuesDataProvider()
+    public function defaultValuesDataProvider(): array
     {
         return [
             'int' => [ new Argument('int', 'int', null, true, 1) ],
@@ -141,6 +116,8 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
      * @dataProvider defaultValuesDataProvider
      *
      * @param Argument $type
+     *
+     * @throws ReflectionException
      */
     public function testGetMethodParametersDefaultValues(Argument $type)
     {
@@ -149,7 +126,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         verify($params[$type->name])->equals($type);
     }
 
-    public function defaultValuesNullDataProvider()
+    public function defaultValuesNullDataProvider(): array
     {
         return [
             'int' => [ new Argument('int', 'int', null, true, null) ],
@@ -164,6 +141,8 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
      * @dataProvider defaultValuesNullDataProvider
      *
      * @param Argument $type
+     *
+     * @throws ReflectionException
      */
     public function testGetMethodParametersDefaultNullValues(Argument $type)
     {
@@ -172,9 +151,9 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         verify($params[$type->name])->equals($type);
     }
     
-    public function callableDataProvider()
+    public function callableDataProvider(): array
     {
-        $helperDir = Configuration::supportDir() . DIRECTORY_SEPARATOR . 'Helper';
+        $helperDir = __DIR__ . DIRECTORY_SEPARATOR . 'Helper';
         $callableFile = $helperDir . DIRECTORY_SEPARATOR . 'callable.php';
         require_once $callableFile;
 
@@ -183,7 +162,7 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
         return array_map(function($value) { return [ $value ]; }, [
             'emptyFunc' => function(string $foo){},
             'object' => [(new CallableClass()), 'callableMethod'],
-            'globalFunc' => 'OS\DependencyInjector\Test\Helper\callableFunction',
+            'globalFunc' => 'OS\DependencyInjector\Tests\Helper\callableFunction',
             'staticString' => CallableStaticClass::class . '::callableStaticMethod',
             'staticArray' => [CallableStaticClass::class, 'callableStaticMethod'],
             'instanceInvoke' => new CallableClassWithInvoke(),
@@ -196,7 +175,8 @@ class ReflectionHandlerTest extends \Codeception\Test\Unit
 
     /**
      * @dataProvider callableDataProvider
-     * @param callable $callable
+     * @param callable|string|array $callable
+     * @throws ReflectionException
      */
     public function testGetCallableParameters($callable)
     {

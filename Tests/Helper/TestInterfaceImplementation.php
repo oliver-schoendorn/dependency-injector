@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-namespace OS\DependencyInjector\Test\_support\Helper;
+namespace OS\DependencyInjector\Tests\Helper;
 
 
-interface TestInterface
+class TestInterfaceImplementation implements TestInterface
 {
-    public function returnTrue(): bool;
+    public function returnTrue(): bool
+    {
+        return true;
+    }
 }

@@ -1,3 +1,5 @@
-/vendor/
-/composer.lock
+/vendor
+/reports
+/.phpunit.result.cache
+/.idea
 /TODO

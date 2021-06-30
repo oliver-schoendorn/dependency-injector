@@ -12,20 +12,23 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.0",
+        "php": "^7.4",
         "psr/cache": "^1.0",
-        "psr/container": "^1.0",
+        "psr/container": "^2.0",
         "psr/log": "^1.1"
     },
     "autoload": {
         "psr-4": {
-            "OS\\DependencyInjector\\": "./Source",
-            "OS\\DependencyInjector\\Test\\": "./Test"
+            "OS\\DependencyInjector\\": "./Source"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OS\\DependencyInjector\\Tests\\": "./Tests"
         }
     },
     "require-dev": {
-        "codeception/codeception": "^2.5",
-        "codeception/verify": "^0.4.0",
+        "codeception/verify": "^2.1",
         "monolog/monolog": "^1.26",
         "php-coveralls/php-coveralls": "^2.4"
     }

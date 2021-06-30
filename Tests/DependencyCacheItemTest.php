@@ -1,24 +1,24 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
+use Exception;
 use OS\DependencyInjector\DependencyCacheItem;
 use OS\DependencyInjector\DependencyContainer;
-use OS\DependencyInjector\Test\Helper\ClassAccessor;
+use OS\DependencyInjector\Tests\Helper\ClassAccessor;
+use PHPUnit\Framework\TestCase;
 
-class DependencyCacheItemTest extends \Codeception\Test\Unit
+class DependencyCacheItemTest extends TestCase
 {
-    /**
-     * @var \OS\DependencyInjector\Test\UnitTester
-     */
-    protected $tester;
-
     public function testConstructor()
     {
         $key = 'key';
         $hasValue = true;
         $value = new DependencyContainer($key, ['foo' => 'bar']);
-        $expires = new \DateTimeImmutable('+20seconds');
+        $expires = new DateTimeImmutable('+20seconds');
 
         $item = new DependencyCacheItem($key, $hasValue, $value, $expires);
         $accessor = new ClassAccessor($item);
@@ -48,7 +48,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
         verify($item->get())->same($value);
     }
 
-    public function isHitDataProvider()
+    public function isHitDataProvider(): array
     {
         return [
             'is hit' => [ true, '+30seconds', true ],
@@ -63,6 +63,8 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
      * @param bool   $isHit
      * @param string $expiry
      * @param bool   $hasValue
+     *
+     * @throws Exception
      */
     public function testIsHit(bool $isHit, string $expiry, bool $hasValue)
     {
@@ -72,13 +74,13 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
             $hasValue
                 ? new DependencyContainer('key', ['foo' => 'bar'])
                 : null,
-            new \DateTimeImmutable($expiry)
+            new DateTimeImmutable($expiry)
         );
 
         verify($item->isHit())->equals($isHit);
     }
 
-    public function setDataProvider()
+    public function setDataProvider(): array
     {
         return [
             'with hit' => [ '+30seconds', true, true ],
@@ -92,12 +94,14 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
      * @dataProvider setDataProvider
      *
      * @param string $expires
-     * @param bool $hasValue
-     * @param bool $wasHit
+     * @param bool   $hasValue
+     * @param bool   $wasHit
+     *
+     * @throws Exception
      */
-    public function testSet($expires, $hasValue, $wasHit)
+    public function testSet(string $expires, bool $hasValue, bool $wasHit)
     {
-        $expires = new \DateTimeImmutable($expires);
+        $expires = new DateTimeImmutable($expires);
         $value = new DependencyContainer('key', ['foo' => 'bar']);
         $item = new DependencyCacheItem('key', $hasValue, $hasValue ? $value : null, $expires);
 
@@ -107,7 +111,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
         verify((new ClassAccessor($item))->getProperty('expires'))->same($wasHit ? $expires : null);
     }
 
-    public function isExpiredDataProvider()
+    public function isExpiredDataProvider(): array
     {
         return [
             'not expired' => [ '+30 seconds', false ],
@@ -121,10 +125,12 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
      *
      * @param string $expires
      * @param bool   $isExpired
+     *
+     * @throws Exception
      */
     public function testIsExpired(string $expires, bool $isExpired)
     {
-        $expires = new \DateTimeImmutable($expires);
+        $expires = new DateTimeImmutable($expires);
         $item = new DependencyCacheItem('key', false, null, $expires);
 
         verify($item->isExpired())->equals($isExpired);
@@ -140,7 +146,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
 
     public function testExpiresAtWithValidDate()
     {
-        $expiry = new \DateTimeImmutable('now');
+        $expiry = new DateTimeImmutable('now');
         $item = new DependencyCacheItem('key', false);
 
         verify($item->expiresAt($expiry))->same($item);
@@ -151,14 +157,16 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
     {
         $item = new DependencyCacheItem('key', false);
         $this->expectException('InvalidArgumentException');
+
+        /** @noinspection PhpParamsInspection */
         $item->expiresAt('i am invalid');
     }
 
-    public function expiresAfterDataProvider()
+    public function expiresAfterDataProvider(): array
     {
         return [
             'time in seconds' => [ 60, 60 ],
-            'date interval' => [ new \DateInterval('PT60S'), 60 ],
+            'date interval' => [ new DateInterval('PT60S'), 60 ],
             'null' => [ null, null ],
             'invalid interval' => [ 'foo', null ]
         ];
@@ -167,14 +175,16 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
     /**
      * @dataProvider expiresAfterDataProvider
      *
-     * @param int|\DateTimeInterface|null $time
-     * @param int|null $curDateOffset
+     * @param int|DateTimeInterface|null $time
+     * @param int|null                   $curDateOffset
+     *
+     * @throws Exception
      */
-    public function testExpiresAfter($time, $curDateOffset)
+    public function testExpiresAfter($time, ?int $curDateOffset)
     {
         // Calculate the expected expiry date in here, to avoid the time gap
         // between the data provider and the test execution
-        $expectedDate = is_null($curDateOffset) ? null : new \DateTimeImmutable('+' . $curDateOffset . 'seconds');
+        $expectedDate = is_null($curDateOffset) ? null : new DateTimeImmutable('+' . $curDateOffset . 'seconds');
 
         $item = new DependencyCacheItem('key', false);
         verify($item->expiresAfter($time))->same($item);
@@ -184,7 +194,7 @@ class DependencyCacheItemTest extends \Codeception\Test\Unit
             verify($actualExpiry)->null();
         }
         else {
-            verify($actualExpiry)->isInstanceOf(\DateTimeInterface::class);
+            verify($actualExpiry)->instanceOf(DateTimeInterface::class);
             verify($actualExpiry->getTimestamp())->equals($expectedDate->getTimestamp(), 2);
         }
     }

@@ -1,0 +1,13 @@
+version: '3'
+services:
+  codecept:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - COMPOSER_CACHE_DIR=/var/cache/composer
+    restart: "no"
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: vendor/bin/codecept

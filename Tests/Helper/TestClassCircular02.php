@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright (c) 2017 Oliver Schöndorn
+/*
+ * Copyright (c) 2021 Oliver Schöndorn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-namespace OS\DependencyInjector\Test\_support\Helper;
+namespace OS\DependencyInjector\Tests\Helper;
 
 
-class TestClass04
+class TestClassCircular02
 {
-    public function __construct($requiredParam) { }
+    public function __construct(TestClassCircular01 $test)
+    {
+        
+    }
 }

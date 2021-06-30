@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright (c) 2017 Oliver Schöndorn
+/*
+ * Copyright (c) 2021 Oliver Schöndorn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-namespace OS\DependencyInjector\Test\_support\Helper;
+namespace OS\DependencyInjector\Tests\Helper;
 
+// here you can define custom actions
+// all public methods declared in helper class will be available in $I
 
-class TestClass05
+class Unit extends \Codeception\Module
 {
-    public function __construct() { }
+
 }
