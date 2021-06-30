@@ -8,7 +8,7 @@ install:
   - composer install
 
 script:
-  - XDEBUG_MODE=coverage php vendor/bin/codecept run --coverage --coverage-xml
+  - XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage --coverage-xml
 
 after_success:
   - php vendor/bin/php-coveralls
