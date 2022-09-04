@@ -26,15 +26,8 @@ namespace OS\DependencyInjector;
  */
 class DependencyContainer implements \Serializable
 {
-    /**
-     * @var string
-     */
-    private $classId;
-
-    /**
-     * @var array[]
-     */
-    private $store = [];
+    private string $classId;
+    private array $store;
 
     /**
      * DependencyContainer constructor.
@@ -87,7 +80,7 @@ class DependencyContainer implements \Serializable
     /**
      * @param string $methodName
      * @param string $parameterName
-     * @param string $parameterClass
+     * @param ?string $parameterClass
      *
      * @return DependencyContainer
      */
@@ -124,27 +117,36 @@ class DependencyContainer implements \Serializable
      * @return string the string representation of the object or null
      * @since 5.1.0
      */
-    public function serialize()
+    public function serialize(): string
     {
-        return serialize([
-            'classId' => $this->classId,
-            'store'   => $this->store
-        ]);
+        return serialize($this->__serialize());
     }
 
     /**
      * Constructs the object
      * @link  http://php.net/manual/en/serializable.unserialize.php
      *
-     * @param string $serialized The string representation of the object.
+     * @param string $data The string representation of the object.
      *
      * @return void
      * @since 5.1.0
      */
-    public function unserialize($serialized)
+    public function unserialize(string $data): void
     {
-        $serialized = unserialize($serialized);
-        $this->classId = $serialized['classId'];
-        $this->store   = $serialized['store'];
+        $this->__unserialize(unserialize($data));
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'classId' => $this->classId,
+            'store'   => $this->store
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->classId = $data['classId'];
+        $this->store   = $data['store'];
     }
 }
