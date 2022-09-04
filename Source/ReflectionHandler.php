@@ -94,12 +94,12 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
     }
 
     /**
-     * @param callable|string|array $callable
+     * @param callable|array|string $callable
      *
      * @return ReflectionFunctionAbstract
      * @throws ReflectionException
      */
-    private function getReflectionByCallable($callable): ReflectionFunctionAbstract
+    private function getReflectionByCallable(callable|array|string $callable): ReflectionFunctionAbstract
     {
         if (is_string($callable) && ($reflection = $this->getReflectionByCallableString($callable))) {
             return $reflection;
@@ -130,7 +130,7 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         }
 
         // Static class call
-        if (strpos($callable, '::') !== false) {
+        if (str_contains($callable, '::')) {
             list($classId, $method) = explode('::', $callable, 2);
             return new ReflectionMethod($classId, $method);
         }
@@ -192,20 +192,19 @@ class ReflectionHandler implements ReflectionHandlerInterface, LoggerAwareInterf
         return $methodParameters;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function reflectArgument(ReflectionParameter $parameter): Argument
     {
         $argument = new Argument($parameter->getName());
 
         if ($parameter->isVariadic()) {
             $argument->type = 'variadic';
-        } elseif ($parameterClass = $parameter->getClass()) {
+        } elseif ($parameter->getType()?->isBuiltin() === false && $parameterClass = $parameter->getType()) {
             $argument->type = 'object';
-            $argument->classId = $parameterClass->getName();
+            $argument->classId = $parameterClass->getName() === 'self'
+                ? $parameter->getDeclaringClass()->getName()
+                : $parameterClass->getName();
         } elseif ($parameter->hasType() && $parameterType = $parameter->getType()) {
-            $argument->type = (string) $parameterType;
+            $argument->type = ltrim((string) $parameterType, '?');
             $argument->optional = $parameterType->allowsNull();
         }
 

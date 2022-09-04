@@ -285,7 +285,6 @@ class DependencyInjectorTest extends TestCase
             'closureInvoke' => $closure,
             // -> Only supported by DI
             'stringInvoke' => CallableClassWithInvoke::class,
-            'stringClass' => CallableClass::class . '::callableMethod',
         ]);
     }
 

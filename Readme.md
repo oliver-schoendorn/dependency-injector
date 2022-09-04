@@ -48,9 +48,7 @@ class FakeController
 }
 
 
-/**
- * Some where in your bootstrap or dispatching process 
- */
+// Somewhere in your bootstrap or dispatching process 
 use OS\DependencyInjector\DependencyInjector;
 use OS\DependencyInjector\ReflectionHandler;
 
@@ -66,18 +64,14 @@ function dispatchRequest(
     string $routeControllerMethod,
     array $requestPayload
 ) use ($dependencyInjector) {
-    /**
-     * The dependency injector (DI) will create an instance of the given controller class id
-     * In this specific example, the DI will attempt to autoload the FakeEntityRepository and inject it into the
-     * controller constructor.  
-     */
+    // The dependency injector (DI) will create an instance of the given controller class id
+    // In this specific example, the DI will attempt to autoload the FakeEntityRepository and inject it into the
+    // controller constructor. 
     $controllerInstance = $dependencyInjector->resolve($routeControllerClassId);
     
-    /**
-     * After creating the controller instance, the $routeControllerMethod on the $controllerInstance will be called.
-     * The DI will apply the necessary parameters, as long as they are present in the $requestPayload array or if it
-     * can be autowired (for example if the get method requires an additional Repository instance for a related entity). 
-     */
+    // After creating the controller instance, the $routeControllerMethod on the $controllerInstance will be called.
+    // The DI will apply the necessary parameters, as long as they are present in the $requestPayload array or if it
+    // can be autowired (for example if the get method requires an additional Repository instance for a related entity). 
     return $dependencyInjector->invoke([ $controllerInstance, $routeControllerMethod ], $requestPayload);
 }
 
@@ -120,7 +114,7 @@ $pdoDatabaseConnection = $di->resolve(DatabaseConnection::class);
 ### Handling multiple connections (simple)
 
 Sometimes you have to deal with multiple database connections for example. The following example shows how to deal
-with mutliple shared instances of the same class or interface.
+with multiple shared instances of the same class or interface.
 
 Note however, that this approach will not work with auto wiring and also break the type hinting in PhpStorm.
 
