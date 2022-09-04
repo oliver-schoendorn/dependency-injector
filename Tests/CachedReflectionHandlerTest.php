@@ -1,31 +1,27 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
+use DateTimeImmutable;
 use OS\DependencyInjector\Argument;
 use OS\DependencyInjector\CachedReflectionHandler;
 use OS\DependencyInjector\DependencyCacheItem;
 use OS\DependencyInjector\DependencyContainer;
-use OS\DependencyInjector\Test\_support\Helper\TestClass01;
-use OS\DependencyInjector\Test\Helper\ClassAccessor;
+use OS\DependencyInjector\Tests\Helper\ClassAccessor;
+use OS\DependencyInjector\Tests\Helper\TestClass01;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\NullLogger;
 
-class CachedReflectionHandlerTest extends \Codeception\Test\Unit
+class CachedReflectionHandlerTest extends TestCase
 {
     /**
-     * @var \OS\DependencyInjector\Test\UnitTester
+     * @return MockObject|CacheItemPoolInterface
      */
-    protected $tester;
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|CacheItemPoolInterface
-     */
-    private function getCacheMockBuilder(): \PHPUnit_Framework_MockObject_MockObject
+    private function getCacheMockBuilder(): CacheItemPoolInterface
     {
-        return $this->getMockBuilder(CacheItemPoolInterface::class)
-            ->setMethodsExcept([])
-            ->getMockForAbstractClass();
+        return $this->createStub(CacheItemPoolInterface::class);
     }
 
     public function testConstructor()
@@ -42,7 +38,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
         verify($accessor->getProperty('logger'))->same($logger);
     }
 
-    public function getDependencyContainerDataProvider()
+    public function getDependencyContainerDataProvider(): array
     {
         $container = new DependencyContainer('key');
         return [
@@ -64,7 +60,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
             'key',
             !! $container,
             $container,
-            $cacheItemExpired ? new \DateTimeImmutable('-1minute') : new \DateTimeImmutable('+1minute')
+            $cacheItemExpired ? new DateTimeImmutable('-1minute') : new DateTimeImmutable('+1minute')
         );
 
         $cache = $this->getCacheMockBuilder();
@@ -76,7 +72,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
         $handler = new CachedReflectionHandler($cache);
         $response = $handler->getDependencyContainer('key');
 
-        verify($response)->isInstanceOf(DependencyContainer::class);
+        verify($response)->instanceOf(DependencyContainer::class);
         if ($container && ! $cacheItemExpired) {
             verify($response)->same($container);
         }
@@ -85,7 +81,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
         }
     }
 
-    public function getMethodParametersDataProvider()
+    public function getMethodParametersDataProvider(): array
     {
         $testClassId = TestClass01::class;
         $testClassConstructorArguments = [ 'testGetMethodParameters' => [
@@ -113,7 +109,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
             'key',
             !! $container,
             $container,
-            new \DateTimeImmutable('+1minute')
+            new DateTimeImmutable('+1minute')
         );
 
         $pool = $this->getCacheMockBuilder();
@@ -126,7 +122,7 @@ class CachedReflectionHandlerTest extends \Codeception\Test\Unit
             ->method('save')
             ->with($this::callback(function(DependencyCacheItem $cacheItem) use ($classId, $container)
             {
-                verify($cacheItem)->isInstanceOf(DependencyCacheItem::class);
+                verify($cacheItem)->instanceOf(DependencyCacheItem::class);
                 verify($cacheItem->getKey())->equals($classId);
                 verify($cacheItem->get())->same($container);
                 return true;

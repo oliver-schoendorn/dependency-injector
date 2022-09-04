@@ -1,17 +1,13 @@
 language: php
 php:
-  - '7.0'
-  - '7.1'
+  - '8.1'
 
 install:
   - composer self-update
   - composer install
 
-before_script:
-  - php vendor/bin/codecept build
-
 script:
-  - php vendor/bin/codecept run --coverage --coverage-xml
+  - XDEBUG_MODE=coverage php vendor/bin/phpunit
 
-after_success:
-  - php vendor/bin/php-coveralls
+#after_success:
+#  - php vendor/bin/php-coveralls

@@ -1,8 +1,8 @@
 {
     "name": "oliver-schoendorn/dependency-injector",
-    "description": "",
+    "description": "A very simple dependency injector that supports instance creation and auto wiring of classes, class methods and functions. Additionally it provides simple means of caching the necessary reflections to boost performance in heavy load environments.",
     "type": "library",
-    "keywords": [],
+    "keywords": [ "dependency injector", "dependency injection", "auto wiring", "cached reflections" ],
     "license": "Apache-2.0",
     "authors": [
         {
@@ -12,21 +12,23 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.0",
+        "php": "^7.4",
         "psr/cache": "^1.0",
-        "psr/container": "^1.0",
-        "psr/log": "^1.0",
-        "php-coveralls/php-coveralls": "^2.0"
+        "psr/container": "^2.0",
+        "psr/log": "^1.1"
     },
     "autoload": {
         "psr-4": {
-            "OS\\DependencyInjector\\": "./Source",
-            "OS\\DependencyInjector\\Test\\": "./Test"
+            "OS\\DependencyInjector\\": "./Source"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OS\\DependencyInjector\\Tests\\": "./Tests"
         }
     },
     "require-dev": {
-        "codeception/codeception": "^2.3",
-        "codeception/verify": "^0.4.0",
-        "monolog/monolog": "^1.23"
+        "codeception/verify": "^2.1",
+        "php-coveralls/php-coveralls": "^2.4"
     }
 }

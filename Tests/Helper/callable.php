@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright (c) 2017 Oliver Schöndorn
+/*
+ * Copyright (c) 2021 Oliver Schöndorn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,40 @@
  * limitations under the License.
  */
 
-namespace OS\DependencyInjector\Test\_support\Helper;
 
+namespace OS\DependencyInjector\Tests\Helper;
 
-class TestClass04
+function callableFunction(string $foo)
 {
-    public function __construct($requiredParam) { }
+    return true;
+}
+
+class CallableClass
+{
+    public function callableMethod(string $foo)
+    {
+        return true;
+    }
+}
+
+class CallableClassWithInvoke
+{
+    public function __invoke(string $foo)
+    {
+        return true;
+    }
+}
+
+global $closure;
+$closure = function(string $foo)
+{
+    return true;
+};
+
+class CallableStaticClass
+{
+    public static function callableStaticMethod(string $foo)
+    {
+        return true;
+    }
 }

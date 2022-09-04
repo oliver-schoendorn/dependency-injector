@@ -1,17 +1,13 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
 use OS\DependencyInjector\DependencyContainer;
-use OS\DependencyInjector\Test\Helper\ClassAccessor;
+use OS\DependencyInjector\Tests\Helper\ClassAccessor;
+use PHPUnit\Framework\TestCase;
 
-class DependencyContainerTest extends \Codeception\Test\Unit
+class DependencyContainerTest extends TestCase
 {
-    /**
-     * @var \OS\DependencyInjector\Test\UnitTester
-     */
-    protected $tester;
-
     public function testConstructorStoresClassName()
     {
         $expectedClassId = 'Foo';
@@ -61,7 +57,7 @@ class DependencyContainerTest extends \Codeception\Test\Unit
     {
         $testMethodName = 'bar';
         $container = new DependencyContainer('Foo', []);
-        verify('pre-condition', $container->hasMethod($testMethodName))
+        verify($container->hasMethod($testMethodName))
             ->equals(false);
 
         $container->addMethod($testMethodName, []);
@@ -81,7 +77,7 @@ class DependencyContainerTest extends \Codeception\Test\Unit
         $testParamType = null;
 
         $container = new DependencyContainer('Foo', []);
-        verify('pre-condition', $container->hasMethod($testMethodName))
+        verify($container->hasMethod($testMethodName))
             ->equals(false);
 
         $container->addParameter($testMethodName, $testParamName, $testParamType);
@@ -99,7 +95,7 @@ class DependencyContainerTest extends \Codeception\Test\Unit
         $testParamType = null;
 
         $container = new DependencyContainer('Foo', [ $testMethodName => []]);
-        verify('pre-condition', $container->hasMethod($testMethodName))
+        verify($container->hasMethod($testMethodName))
             ->equals(true);
 
         $container->addParameter($testMethodName, $testParamName, $testParamType);

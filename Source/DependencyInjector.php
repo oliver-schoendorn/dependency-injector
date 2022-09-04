@@ -18,7 +18,6 @@
 namespace OS\DependencyInjector;
 
 
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -31,7 +30,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     /**
      * @var ReflectionHandlerInterface
      */
-    protected $reflectionHandler;
+    protected ReflectionHandlerInterface $reflectionHandler;
 
     /**
      * @var LoggerInterface
@@ -41,32 +40,32 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
     /**
      * @var string[]
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * @var callable[]
      */
-    protected $delegates = [];
+    protected array $delegates = [];
 
     /**
      * @var array[]
      */
-    protected $configs = [];
+    protected array $configs = [];
 
     /**
      * @var callable[]
      */
-    protected $callbacks = [];
+    protected array $callbacks = [];
 
     /**
      * @var object[]
      */
-    protected $sharedInstances = [];
+    protected array $sharedInstances = [];
 
     /**
      * @var array
      */
-    protected $processing = [];
+    protected array $processing = [];
 
     /**
      * DependencyInjectorInterface constructor.
@@ -100,7 +99,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
         $this->sharedInstances[$classId] = $classInstance;
 
         if ($alias) {
-            $this->alias($classId, $alias);
+            $this->alias($alias, $classId);
         }
 
         return $this;
@@ -161,7 +160,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return object
      */
-    public function resolve(string $classId, array $arguments = [])
+    public function resolve(string $classId, array $arguments = []): object
     {
         $this->logger->debug('Requested instance of class {classId}', [ 'classId' => $classId ]);
         $this->processing = [];
@@ -173,7 +172,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * Basically the same as resolve, but with a specific method instead of the constructor.
      *
-     * @param callable $callable
+     * @param callable|string|array $callable
      * @param array $arguments
      *
      * @return mixed
@@ -200,7 +199,7 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
      *
      * @return object
      */
-    protected function resolveDependency(string $classId, array $arguments = [])
+    protected function resolveDependency(string $classId, array $arguments = []): object
     {
         $this->logger->debug('Resolving class {classId}', [ 'classId' => $classId ]);
 

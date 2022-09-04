@@ -1,16 +1,12 @@
 <?php
-namespace OS\DependencyInjector\Test;
+namespace OS\DependencyInjector\Tests;
 
 
 use OS\DependencyInjector\Argument;
+use PHPUnit\Framework\TestCase;
 
-class ArgumentTest extends \Codeception\Test\Unit
+class ArgumentTest extends TestCase
 {
-    /**
-     * @var \OS\DependencyInjector\Test\UnitTester
-     */
-    protected $tester;
-
     Public function testConstructor()
     {
         $name = 'foo';
