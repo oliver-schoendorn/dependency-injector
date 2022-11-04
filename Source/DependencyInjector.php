@@ -184,6 +184,14 @@ class DependencyInjector implements DependencyInjectorInterface, LoggerAwareInte
             $callable = $this->resolve($callable);
         }
 
+        if (is_array($callable) && count($callable) === 2) {
+            list ($instance, $methodName) = $callable;
+
+            if (is_string($instance)) {
+                $callable = [ $this->resolve($instance, $arguments), $methodName ];
+            }
+        }
+
         $parameters = $this->reflectionHandler->getCallableParameters($callable);
         $parameters = $this->resolveParameters('callable', '__invoke', $parameters, $arguments);
         return call_user_func_array($callable, $parameters);

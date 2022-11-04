@@ -281,6 +281,7 @@ class DependencyInjectorTest extends TestCase
             'globalFunc' => 'OS\DependencyInjector\Tests\Helper\callableFunction',
             'staticString' => CallableStaticClass::class . '::callableStaticMethod',
             'staticArray' => [CallableStaticClass::class, 'callableStaticMethod'],
+            'array' => [ CallableClass::class, 'callableMethod' ],
             'instanceInvoke' => new CallableClassWithInvoke(),
             'closureInvoke' => $closure,
             // -> Only supported by DI
